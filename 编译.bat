@@ -1,0 +1,1 @@
+pyinstaller -c --icon=favicon.ico xyqk-main.py
