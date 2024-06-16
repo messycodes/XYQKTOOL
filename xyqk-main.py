@@ -9,6 +9,7 @@ from rich import traceback
 import os
 import tkinter as tk
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tkinter import ttk
 
@@ -19,7 +20,7 @@ class AnimatedGif(tb.Frame):
         super().__init__(master, width=400, height=300)
 
         # 打开GIF并创建循环迭代器
-        file_path = Path(__file__).parent / "loading.gif"
+        file_path = Path(__file__).parent / "resource/loading.gif"
         with Image.open(file_path) as im:
             # 创建序列
             sequence = ImageSequence.Iterator(im)
@@ -103,20 +104,23 @@ def run_program1():
     os.system("cmd/c start boot一键ROOT.bat")
     os.chdir('.')
 
-def run_program2():
-    print("运行GSI")
-
 def run_program3():
     print("运行cmd")
     os.system("cmd/c start cd xyqk")
 
 def run_program4():
     print("运行DM")
+    current_directory = os.getcwd()  # 保存当前工作目录
+    os.chdir('xyqk')
     os.system("cmd/c start dm.bat")
-
+    os.chdir(current_directory)
+    
 def run_program5():
     print("运行驱动程序")
-    os.system("cmd/c start install-driver.bat")
+    current_directory = os.getcwd()  # 保存当前工作目录
+    os.chdir('install-driver')
+    run_program("cmd/c start install-driver.bat")
+    os.chdir(current_directory) # 将当前工作目录更改回原来的目录
 
 def run_program6():
     print("运行安装7-zip")
@@ -126,6 +130,36 @@ def run_program7():
     print("运行收款")
     run_program("python pay.py")
 
+def run_ADBtool():
+    print("运行ADB Tool")
+    current_directory = os.getcwd()  
+    os.chdir('xyqk')
+    run_program("fastbootdemo.py")
+    os.chdir(current_directory)
+
+def run_FASTBOOTtool():
+    print("运行FASTBOOT Tool")
+    current_directory = os.getcwd()  
+    os.chdir('xyqk')
+    run_program("fastbootdemo.py")
+    os.chdir(current_directory)
+    
+def run_web():
+     print("运行网页导航")
+
+def run_a57():
+     print("A57 5G专属功能")
+
+def run_gsi():
+     print("GSI下载")
+
+def run_ftd():
+     print("运行fastbootd刷机工具")
+     current_directory = os.getcwd()
+     os.chdir('fastboot2')
+     run_program("FastbootEnhance.exe")
+     os.chdir(current_directory)
+
 def install_dependencies_with_animation(use_multithreading):
     """
     显示安装动画并安装依赖
@@ -133,8 +167,9 @@ def install_dependencies_with_animation(use_multithreading):
     install_window = tb.Toplevel()
     install_window.title("安装中")
     install_window.geometry("400x400")
-    install_window.iconbitmap('favicon.ico')
+    install_window.iconbitmap('resource/favicon.ico')
     install_window.resizable(False, False)
+    install_window.wm_attributes('-topmost', 1)
 
     # 使用 Frame 布局来使组件居中对齐
     content_frame = tb.Frame(install_window)
@@ -153,6 +188,69 @@ def install_dependencies_with_animation(use_multithreading):
 
     install_window.mainloop()
 
+# 创建应用程序窗口
+app = tb.Window(themename='darkly')
+app.title('XYQK TOOL 1.3data')
+app.geometry("900x500")
+app.resizable(False, False)  # 禁止改变窗口大小
+app.iconbitmap('resource/favicon.ico')
+
+# 按钮框架
+button_frame = tb.Frame(app, height=50, width=512, bootstyle="dark")
+button_frame.pack(side='top', fill='both', expand=1)
+
+# 淡入效果
+def fade_in(widget, duration=200):
+    steps = 30
+    interval = duration // steps
+    for i in range(steps + 2):
+        alpha = 0.2 + (0.8 * i / steps)
+        widget.attributes('-alpha', alpha)
+        widget.update()
+        time.sleep(interval / 1000)
+
+# 淡出效果
+def fade_out(widget, duration=400):
+    steps = 30
+    interval = duration // steps
+    for i in range(steps + 2):
+        alpha = 0.8 - (0.6 * i / steps)
+        widget.attributes('-alpha', alpha)
+        widget.update()
+        time.sleep(interval / 1000)
+
+
+def switch_frame(new_frame_func):
+    fade_out(app)
+    new_frame_func()
+    fade_in(app)
+
+style = tb.Style()
+theme_names = style.theme_names()#以列表的形式返回多个主题名
+theme_selection = tb.Frame(app, padding=(10, 10, 10, 0))
+theme_selection.pack(fill=X, expand=YES)
+lbl = tb.Label(theme_selection, text="选择主题:")
+theme_cbo = tb.Combobox(
+        master=theme_selection,
+        text=style.theme.name,
+        values=theme_names,
+)
+theme_cbo.pack(padx=10, side=RIGHT)
+theme_cbo.current(theme_names.index(style.theme.name))
+lbl.pack(side=RIGHT)
+def change_theme(event):
+    theme_cbo_value = theme_cbo.get()
+    style.theme_use(theme_cbo_value)
+    theme_selected.configure(text=theme_cbo_value)
+    theme_cbo.selection_clear()
+theme_cbo.bind('<<ComboboxSelected>>', change_theme)
+theme_selected = ttk.Label(
+        master=theme_selection,
+        text="litera",
+        font="-size 24 -weight bold"
+)
+theme_selected.pack(side=LEFT)
+
 def create_frame1():
     global current_frame
     if current_frame:
@@ -162,14 +260,14 @@ def create_frame1():
     current_frame.pack_propagate(0)
 
     # 添加背景图片
-    background_image = Image.open("background.jpg")  # 替换为你的背景图片路径
+    background_image = Image.open("resource/background.jpg")  # 替换为你的背景图片路径
     background_photo = ImageTk.PhotoImage(background_image)
     background_label = tb.Label(current_frame, image=background_photo)
     background_label.image = background_photo
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
     # 添加原本主程序的按钮和布局
-    center_label = tb.Label(current_frame, text="星雨晴空工具箱", font=("Helvetica", 24), borderwidth=2, relief="solid", foreground="white", bootstyle="INFO")
+    center_label = tb.Label(current_frame, text="星雨晴空工具箱", font=("Helvetica", 24), borderwidth=2, relief="solid", bootstyle="lighe")
     center_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
 
     button_frame = tb.Frame(current_frame)
@@ -177,7 +275,6 @@ def create_frame1():
 
     buttons = [
         ("root", run_program1),
-        ("刷gsi", run_program2),
         ("cmd", run_program3),
         ("去dm校检", run_program4),
         ("驱动", run_program5),
@@ -198,14 +295,31 @@ def create_frame2():
     current_frame.pack_propagate(0)
 
     # 添加背景图片
-    background_image = Image.open("background2.jpg")  # 替换为你的背景图片路径
+    background_image = Image.open("resource/background2.jpg")  # 替换为你的背景图片路径
     background_photo = ImageTk.PhotoImage(background_image)
     background_label = tb.Label(current_frame, image=background_photo)
     background_label.image = background_photo
     background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-    center_label = tb.Label(current_frame, text="GSI刷写", font=("Helvetica", 24), borderwidth=2, relief="solid", foreground="white", bootstyle="INFO")
+    center_label = tb.Label(current_frame, text="刷机工具", font=("Helvetica", 24), borderwidth=2, relief="solid", bootstyle="lighe")
     center_label.place(relx=0.5, rely=0.4, anchor=tk.CENTER)
+
+
+    button_frame = tb.Frame(current_frame)
+    button_frame.place(relx=0.5, rely=0.6, anchor=tk.CENTER)
+
+    buttons = [
+        ("ADB TOOL", run_ADBtool),
+        ("FASTBOOT TOOL", run_FASTBOOTtool),
+        ("fastbootd tool", run_ftd),
+        ("网站导航", run_web),
+        ("GSI下载", run_gsi),
+        ("A57 5G专区", run_a57)
+    ]
+
+    for i, (text, command) in enumerate(buttons):
+        button = tb.Button(button_frame, text=text, command=command, bootstyle="success.Outline.TButton")
+        button.grid(row=0, column=i, padx=5, pady=10)
 
 def create_frame3():
     global current_frame
@@ -290,7 +404,6 @@ def create_frame3():
             config.write(configfile)
 
     installed_switch.config(command=toggle_installed)
-    
 
     # 右侧按钮框架
     right_frame = tk.Frame(current_frame)
@@ -300,36 +413,37 @@ def create_frame3():
     def open_link(url):
         os.system(f"start {url}")
 
-    link_button1 = ttk.Button(right_frame, style="success-link" , text="我的QQ", command=lambda: open_link("https://www.bilibili.com/video/BV1GJ411x7h7/?spm_id_from=333.337.search-card.all.click"))
+    link_button1 = ttk.Button(right_frame, style="success-link", text="我的QQ", command=lambda: open_link("https://www.bilibili.com/video/BV1GJ411x7h7/?spm_id_from=333.337.search-card.all.click"))
     link_button1.pack(pady=10)
 
-    link_button2 = ttk.Button(right_frame, style="success-link" , text="github开源地址", command=lambda: open_link("https://example.com"))
+    link_button2 = ttk.Button(right_frame, style="success-link", text="github开源地址", command=lambda: open_link("https://github.com/messycodes/XYQKTOOL"))
     link_button2.pack(pady=10)
 
-# 创建应用程序窗口
-app = tb.Window(themename='darkly')
-app.title('XYQK TOOL 1.3data')
-app.geometry("600x400")
-app.resizable(False, False)  # 禁止改变窗口大小
-app.iconbitmap('favicon.ico')
-
-# 按钮框架
-button_frame = tb.Frame(app, height=50, width=512, bootstyle="dark")
-button_frame.pack(side='top', fill='both', expand=1)
-
 # 界面切换按钮
-btn1 = tb.Button(button_frame, text='主页', command=create_frame1, bootstyle="info.Outline.TButton")
+btn1 = tb.Button(button_frame, text='主页', command=lambda: switch_frame(create_frame1), bootstyle="info.Outline.TButton")
 btn1.place(relx=0, rely=0, relwidth=0.3, relheight=1)
 
-btn2 = tb.Button(button_frame, text='菜单', command=create_frame2, bootstyle="danger.Outline.TButton" , state="disabled")
+btn2 = tb.Button(button_frame, text='菜单', command=lambda: switch_frame(create_frame2), bootstyle="danger.Outline.TButton")
 btn2.place(relx=0.3, rely=0, relwidth=0.3, relheight=1)
 
-btn3 = tb.Button(button_frame, text='设置', command=create_frame3, bootstyle="success.Outline.TButton")
+btn3 = tb.Button(button_frame, text='设置', command=lambda: switch_frame(create_frame3), bootstyle="success.Outline.TButton")
 btn3.place(relx=0.6, rely=0, relwidth=0.4, relheight=1)
 
 # 初始化显示第一个界面
 current_frame = None
 create_frame1()
+
+# 窗口淡出
+def end():
+    for i in range(0, 105, 5)[::-1]:
+        app.attributes('-alpha', i / 100)
+        time.sleep(0.013)
+        app.update()
+
+# 绑定窗口关闭事件
+def on_closing():
+    end()
+    app.destroy()
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()  # 创建配置文件解析器对象
@@ -347,4 +461,11 @@ if __name__ == "__main__":
     else:
         print("已经初始化过了，即将启动程序")
 
+    # 运行淡入效果
+    fade_in(app)
+
+    # 绑定窗口关闭事件到函数
+    app.protocol("WM_DELETE_WINDOW", on_closing)
+
     app.mainloop()
+
